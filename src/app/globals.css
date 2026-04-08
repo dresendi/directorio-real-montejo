@@ -38,6 +38,11 @@ body {
   font-family: var(--font-body), sans-serif;
 }
 
+.break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 a,
 button,
 input,
@@ -254,6 +259,7 @@ textarea:focus {
   border-radius: 1.25rem;
   background: var(--panel);
   padding: 1rem;
+  min-width: 0;
 }
 
 .info-label {
@@ -265,6 +271,7 @@ textarea:focus {
 }
 
 .info-value {
+  min-width: 0;
   font-size: 0.84rem;
   line-height: 1.45;
   color: var(--ink);

@@ -32,25 +32,27 @@ export function ProviderCard({ provider, isAuthenticated }: ProviderCardProps) {
           )}
         </div>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div className="space-y-3">
+            <div className="min-w-0 space-y-3">
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="category-badge">{provider.category.label}</span>
-                <span className="text-[0.82rem] font-medium text-[color:var(--muted)]">
+                <span className="break-anywhere text-[0.82rem] font-medium text-[color:var(--muted)]">
                   Agregado por {provider.createdByName}
                 </span>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold text-[color:var(--ink)]">{provider.name}</h3>
-                <p className="mt-2 max-w-2xl text-[0.88rem] leading-5 text-[color:var(--muted)]">
+              <div className="min-w-0">
+                <h3 className="break-anywhere text-lg font-semibold text-[color:var(--ink)]">
+                  {provider.name}
+                </h3>
+                <p className="break-anywhere mt-2 max-w-2xl text-[0.88rem] leading-5 text-[color:var(--muted)]">
                   {provider.description}
                 </p>
               </div>
             </div>
 
-            <div className="rounded-[1.05rem] bg-[color:var(--panel)] px-3.5 py-2.5 text-right">
+            <div className="shrink-0 rounded-[1.05rem] bg-[color:var(--panel)] px-3.5 py-2.5 text-right">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[color:var(--brand)]">
                 Rating
               </p>
@@ -66,18 +68,18 @@ export function ProviderCard({ provider, isAuthenticated }: ProviderCardProps) {
           <div className="grid gap-3 md:grid-cols-3">
             <div className="info-chip">
               <span className="info-label">Zona</span>
-              <span className="info-value">{provider.serviceArea}</span>
+              <span className="info-value break-anywhere">{provider.serviceArea}</span>
             </div>
             <div className="info-chip">
               <span className="info-label">Teléfono</span>
-              <span className="info-value">{provider.phone}</span>
+              <span className="info-value break-anywhere">{provider.phone}</span>
             </div>
             <div className="info-chip">
               <span className="info-label">WhatsApp</span>
-              <span className="info-value">
+              <span className="info-value break-anywhere">
                 {provider.whatsappUrl ? (
                   <a
-                    className="text-[color:var(--brand)] underline decoration-[color:var(--brand)]/30 underline-offset-4"
+                    className="break-anywhere text-[color:var(--brand)] underline decoration-[color:var(--brand)]/30 underline-offset-4"
                     href={provider.whatsappUrl}
                     target="_blank"
                     rel="noreferrer"
@@ -95,13 +97,13 @@ export function ProviderCard({ provider, isAuthenticated }: ProviderCardProps) {
             <p className="text-[0.88rem] font-semibold text-[color:var(--ink)]">
               Comentario reciente de un vecino
             </p>
-            <p className="mt-1 text-[0.84rem] text-[color:var(--muted)]">
+            <p className="break-anywhere mt-1 text-[0.84rem] text-[color:var(--muted)]">
               {provider.latestReview
                 ? `${formatStars(provider.latestReview.rating)} por ${provider.latestReview.authorName}`
                 : "Todavía no hay reseñas. Sé el primero en calificar a este proveedor."}
             </p>
             {provider.latestReview ? (
-              <p className="mt-3 text-[0.84rem] leading-5 text-[color:var(--muted)]">
+              <p className="break-anywhere mt-3 text-[0.84rem] leading-5 text-[color:var(--muted)]">
                 {provider.latestReview.comment}
               </p>
             ) : null}

@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Directorio de proveedores de Real Montejo
 
-## Getting Started
+Aplicacion web colaborativa para que los vecinos de Real Montejo inicien sesion, publiquen proveedores de la zona, los califiquen con estrellas y encuentren rapidamente las mejores opciones por categoria.
 
-First, run the development server:
+## Proposito
+
+Este proyecto ayuda a la comunidad a:
+
+- registrar proveedores de confianza recomendados por vecinos
+- consultar proveedores por categoria
+- dejar resenas y calificaciones con estrellas
+- identificar rapidamente a los servicios mejor evaluados
+
+## Funcionalidades principales
+
+- autenticacion con Google
+- alta de proveedores por usuarios autenticados
+- resenas con estrellas
+- filtros y ordenamiento en el directorio
+- navegacion por categorias
+- persistencia con MongoDB o respaldo local en JSON
+
+## Tecnologias
+
+- Next.js 16
+- React
+- TypeScript
+- NextAuth
+- MongoDB
+- Tailwind CSS
+
+## Configuracion local
+
+Instala dependencias:
+
+```bash
+npm install
+```
+
+Crea tu archivo `.env.local` con variables como estas:
+
+```env
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=tu_secreto
+
+GOOGLE_CLIENT_ID=tu_google_client_id
+GOOGLE_CLIENT_SECRET=tu_google_client_secret
+
+MONGODB_URI=mongodb://localhost:27017
+MONGODB_DB_NAME=directorio-real-montejo
+```
+
+## Desarrollo
+
+Levanta el servidor local:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Validacion
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run lint
+npm run build
+```

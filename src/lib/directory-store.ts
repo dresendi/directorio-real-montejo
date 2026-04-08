@@ -86,18 +86,28 @@ function createSeedStore(): DirectoryStore {
 
 function hydrateStoreWithSeedData(store: DirectoryStore) {
   let changed = false;
-  const providers = store.providers.map((provider) => {
+  const seenProviderIds = new Set<string>();
+  const providers = store.providers.reduce<StoredProvider[]>((result, provider) => {
+    if (seenProviderIds.has(provider.id)) {
+      changed = true;
+      return result;
+    }
+
+    seenProviderIds.add(provider.id);
+
     if (provider.imageUrl) {
-      return provider;
+      result.push(provider);
+      return result;
     }
 
     changed = true;
-
-    return {
+    result.push({
       ...provider,
       imageUrl: sampleProviderImageUrl,
-    };
-  });
+    });
+
+    return result;
+  }, []);
 
   const categoriesWithProviders = new Set(providers.map((provider) => provider.categoryId));
   const missingProviders = categories
@@ -109,7 +119,17 @@ function hydrateStoreWithSeedData(store: DirectoryStore) {
     providers.push(...missingProviders);
   }
 
-  const reviews = [...store.reviews];
+  const seenReviewIds = new Set<string>();
+  const reviews = store.reviews.reduce<StoredReview[]>((result, review) => {
+    if (seenReviewIds.has(review.id)) {
+      changed = true;
+      return result;
+    }
+
+    seenReviewIds.add(review.id);
+    result.push(review);
+    return result;
+  }, []);
   const reviewedProviderIds = new Set(reviews.map((review) => review.providerId));
 
   for (const provider of missingProviders) {
