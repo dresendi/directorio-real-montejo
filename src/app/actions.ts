@@ -6,10 +6,43 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { categories } from "@/lib/directory-catalog";
 import { addProvider, getProviderCards, upsertReview } from "@/lib/directory-store";
+import {
+  defaultProviderImageUrl,
+  maxProviderImageSizeInBytes,
+} from "@/lib/provider-images";
 import type { ActionState } from "@/types/directory";
 
 function readText(formData: FormData, fieldName: string) {
   return String(formData.get(fieldName) ?? "").trim();
+}
+
+async function readProviderImage(formData: FormData) {
+  const imageFile = formData.get("imageFile");
+
+  if (!(imageFile instanceof File) || imageFile.size === 0) {
+    return {
+      imageUrl: defaultProviderImageUrl,
+    };
+  }
+
+  if (!imageFile.type.startsWith("image/")) {
+    return {
+      error: "Selecciona una imagen valida desde tu camara o tu dispositivo.",
+    };
+  }
+
+  if (imageFile.size > maxProviderImageSizeInBytes) {
+    return {
+      error: "La imagen es demasiado pesada. Usa una foto menor a 3 MB.",
+    };
+  }
+
+  const imageBuffer = Buffer.from(await imageFile.arrayBuffer());
+  const imageBase64 = imageBuffer.toString("base64");
+
+  return {
+    imageUrl: `data:${imageFile.type};base64,${imageBase64}`,
+  };
 }
 
 export async function addProviderAction(
@@ -27,13 +60,13 @@ export async function addProviderAction(
 
   const name = readText(formData, "name");
   const categoryId = readText(formData, "categoryId");
-  const imageUrl = readText(formData, "imageUrl");
   const description = readText(formData, "description");
   const phone = readText(formData, "phone");
   const whatsappUrl = readText(formData, "whatsappUrl");
   const serviceArea = readText(formData, "serviceArea");
 
   const errors: Record<string, string> = {};
+  const imageResult = await readProviderImage(formData);
 
   if (name.length < 3) {
     errors.name = "Escribe al menos 3 caracteres para el nombre del proveedor.";
@@ -47,8 +80,8 @@ export async function addProviderAction(
     errors.description = "Agrega una descripción más completa de al menos 20 caracteres.";
   }
 
-  if (imageUrl && !/^https?:\/\/.+/u.test(imageUrl)) {
-    errors.imageUrl = "Usa una URL completa para la imagen, por ejemplo https://sitio.com/foto.jpg.";
+  if (imageResult.error) {
+    errors.imageUrl = imageResult.error;
   }
 
   if (phone.length < 8) {
@@ -74,7 +107,7 @@ export async function addProviderAction(
   await addProvider({
     name,
     categoryId,
-    imageUrl,
+    imageUrl: imageResult.imageUrl ?? defaultProviderImageUrl,
     description,
     phone,
     whatsappUrl,

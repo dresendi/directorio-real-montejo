@@ -15,6 +15,8 @@ Este proyecto ayuda a la comunidad a:
 
 - autenticacion con Google
 - alta de proveedores por usuarios autenticados
+- carga de foto del proveedor desde camara o dispositivo
+- imagen predeterminada automatica cuando no se sube foto
 - resenas con estrellas
 - filtros y ordenamiento en el directorio
 - navegacion por categorias
@@ -66,3 +68,10 @@ Abre [http://localhost:3000](http://localhost:3000).
 npm run lint
 npm run build
 ```
+
+## Notas recientes
+
+- la portada se limpio para mostrar solo informacion util para los vecinos
+- el formulario de proveedores ya permite tomar una foto o elegir una imagen desde el dispositivo
+- si no se sube imagen, el sistema usa una imagen predeterminada
+- la persistencia normaliza datos repetidos para evitar problemas de renderizado

@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 
 import { categories } from "@/lib/directory-catalog";
 import { getMongoClient, isMongoConfigured } from "@/lib/mongodb";
+import { defaultProviderImageUrl } from "@/lib/provider-images";
 import type {
   DirectoryStore,
   DirectorySummary,
@@ -17,7 +18,8 @@ import type {
 
 const dataDirectoryPath = path.join(process.cwd(), "data");
 const dataFilePath = path.join(dataDirectoryPath, "directory.json");
-const sampleProviderImageUrl = "https://upload.wikimedia.org/wikipedia/commons/f/fa/Plumber_at_work.jpg";
+const legacyDefaultProviderImageUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/f/fa/Plumber_at_work.jpg";
 const seedAuthorName = "Equipo Directorio Real Montejo";
 const seedAuthorEmail = "equipo@realmontejo.mx";
 const sampleReviewerNames = [
@@ -46,7 +48,7 @@ function createSeedProvider(categoryId: string, index: number): StoredProvider {
     slug: createSlug(providerName),
     name: providerName,
     categoryId: category.id,
-    imageUrl: sampleProviderImageUrl,
+    imageUrl: defaultProviderImageUrl,
     description: `${category.description} Atencion disponible en Real Montejo y colonias cercanas, con trato amable y tiempos de respuesta claros.`,
     phone: formatPhone(phoneDigits),
     whatsappUrl: `https://wa.me/52${phoneDigits}`,
@@ -95,7 +97,7 @@ function hydrateStoreWithSeedData(store: DirectoryStore) {
 
     seenProviderIds.add(provider.id);
 
-    if (provider.imageUrl) {
+    if (provider.imageUrl && provider.imageUrl !== legacyDefaultProviderImageUrl) {
       result.push(provider);
       return result;
     }
@@ -103,7 +105,7 @@ function hydrateStoreWithSeedData(store: DirectoryStore) {
     changed = true;
     result.push({
       ...provider,
-      imageUrl: sampleProviderImageUrl,
+      imageUrl: defaultProviderImageUrl,
     });
 
     return result;

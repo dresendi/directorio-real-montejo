@@ -46,8 +46,6 @@ export default async function Home({ searchParams }: HomePageProps) {
     rawSortBy === "recent"
       ? rawSortBy
       : "rating";
-  const enabledProvidersLabel = enabledProviders.length > 0 ? "Google" : "ninguno por ahora";
-
   const filteredProviders = sortProviders(
     filterProviders({
       providers: providerCards,
@@ -135,8 +133,7 @@ export default async function Home({ searchParams }: HomePageProps) {
                     Inicia sesión para participar en el directorio
                   </h2>
                   <p className="text-sm leading-6 text-[color:var(--muted)]">
-                    El acceso con Google ya está listo. Solo hace falta tener las credenciales en
-                    `.env.local` para activarlo en este proyecto.
+                    Accede con tu cuenta de Google para publicar proveedores y compartir recomendaciones con otros vecinos.
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <SignInButton
@@ -144,23 +141,8 @@ export default async function Home({ searchParams }: HomePageProps) {
                       disabled={!enabledProviders.includes("google")}
                     />
                   </div>
-                  <p className="text-xs leading-5 text-[color:var(--muted)]">
-                    Proveedores habilitados: {enabledProvidersLabel}
-                  </p>
                 </div>
               )}
-            </div>
-
-            <div className="grid gap-3 rounded-[1.5rem] bg-[color:var(--panel)] p-4">
-              <h3 className="text-sm font-semibold text-[color:var(--ink)] sm:text-base">
-                Lo que ya resuelve esta primera versión
-              </h3>
-              <ul className="space-y-2 text-sm leading-6 text-[color:var(--muted)]">
-                <li>Acceso con Google listo para autenticación segura de vecinos.</li>
-                <li>Directorio compartido con categoría, zona de servicio y datos de contacto.</li>
-                <li>Reseñas con estrellas, vistas ordenadas y filtros por categoría.</li>
-                <li>Variables internas en inglés y estructura lista para crecer con buenas prácticas.</li>
-              </ul>
             </div>
           </aside>
         </div>
@@ -445,3 +427,4 @@ export default async function Home({ searchParams }: HomePageProps) {
     </main>
   );
 }
+

@@ -31,7 +31,7 @@ export function ProviderForm() {
   }, [state.status]);
 
   return (
-    <form ref={formRef} action={formAction} className="space-y-5">
+    <form ref={formRef} action={formAction} className="space-y-5" encType="multipart/form-data">
       <div className="grid gap-5 md:grid-cols-2">
         <label className="space-y-2">
           <span className="field-label">Nombre del proveedor</span>
@@ -69,15 +69,17 @@ export function ProviderForm() {
       </label>
 
       <label className="space-y-2">
-        <span className="field-label">Imagen del proveedor</span>
+        <span className="field-label">Foto del proveedor</span>
         <input
           className="field-input"
-          name="imageUrl"
-          placeholder="https://sitio.com/imagen-del-proveedor.jpg"
+          type="file"
+          name="imageFile"
+          accept="image/*"
+          capture="environment"
         />
         <FieldMessage
           error={state.errors?.imageUrl}
-          hint="Opcional. Puedes pegar una liga para mostrar foto o logotipo del proveedor."
+          hint="Opcional. Puedes tomar una foto con tu camara o elegir una imagen de tu dispositivo. Si no subes nada, se usara la imagen predeterminada."
         />
       </label>
 
