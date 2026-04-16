@@ -342,6 +342,20 @@ export async function getProviderCards() {
   return store.providers.map((provider) => toProviderCard(provider, store.reviews));
 }
 
+export async function getProviderBySlug(slug: string) {
+  const store = isMongoConfigured() ? await readMongoStore() : await readStore();
+  const provider = store.providers.find((entry) => entry.slug === slug);
+
+  if (!provider) {
+    return null;
+  }
+
+  return {
+    provider: toProviderCard(provider, store.reviews),
+    reviews: getProviderReviews(store.reviews, provider.id),
+  };
+}
+
 export async function getDirectorySummary(): Promise<DirectorySummary> {
   const providerCards = await getProviderCards();
   const reviewCount = providerCards.reduce((sum, provider) => sum + provider.reviewCount, 0);

@@ -15,6 +15,7 @@ import {
   filterProviders,
   formatStars,
   getSearchParamValue,
+  sortProvidersByRanking,
   sortProviders,
   type ProviderSort,
 } from "@/lib/provider-directory";
@@ -54,6 +55,10 @@ export default async function Home({ searchParams }: HomePageProps) {
     }),
     sortBy,
   );
+  const shouldShowTopProviders = !selectedCategory && !searchQuery && !getSearchParamValue(filters.sort);
+  const visibleProviders = shouldShowTopProviders
+    ? sortProvidersByRanking(providerCards).slice(0, 5)
+    : filteredProviders;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-8 px-4 py-5 sm:px-6 lg:px-8">
@@ -216,8 +221,8 @@ export default async function Home({ searchParams }: HomePageProps) {
           </form>
 
           <div className="mt-6 grid gap-4">
-            {filteredProviders.length > 0 ? (
-              filteredProviders.map((provider) => (
+            {visibleProviders.length > 0 ? (
+              visibleProviders.map((provider) => (
                 <ProviderCard
                   key={provider.id}
                   provider={provider}
@@ -232,8 +237,8 @@ export default async function Home({ searchParams }: HomePageProps) {
           </div>
 
           <div className="hidden">
-            {filteredProviders.length > 0 ? (
-              filteredProviders.map((provider) => (
+            {visibleProviders.length > 0 ? (
+              visibleProviders.map((provider) => (
                 <article
                   key={provider.id}
                   className="rounded-[1.75rem] border border-[color:var(--line)] bg-white p-5 shadow-[0_18px_40px_rgba(15,23,42,0.04)]"

@@ -37,6 +37,16 @@ export function sortProviders(providers: ProviderCard[], sortBy: ProviderSort) {
   });
 }
 
+export function sortProvidersByRanking(providers: ProviderCard[]) {
+  return [...providers].sort((left, right) => {
+    return (
+      right.averageRating - left.averageRating ||
+      right.createdAt.localeCompare(left.createdAt) ||
+      left.name.localeCompare(right.name, "es-MX", { sensitivity: "base" })
+    );
+  });
+}
+
 export function filterProviders(input: {
   providers: ProviderCard[];
   selectedCategory?: string;

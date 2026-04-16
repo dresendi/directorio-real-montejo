@@ -252,6 +252,17 @@ textarea:focus {
   font-weight: 700;
 }
 
+.provider-name-link {
+  display: inline-block;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--brand) 36%, white);
+  text-underline-offset: 0.2rem;
+}
+
+.provider-name-link:hover {
+  color: var(--brand-strong);
+}
+
 .info-chip {
   display: flex;
   flex-direction: column;
