@@ -1,11 +1,10 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { ReviewForm } from "@/app/components/review-form";
 import { authOptions } from "@/lib/auth-options";
 import { getProviderBySlug } from "@/lib/directory-store";
-import { updateProviderImageAction } from "@/app/actions";
 import { formatStars } from "@/lib/provider-directory";
 
 type ProviderDetailPageProps = {
@@ -53,41 +52,6 @@ export default async function ProviderDetailPage({ params }: ProviderDetailPageP
                 className="aspect-square h-full w-full object-cover"
               />
             </div>
-
-            {session?.user?.email && session.user.email === provider.createdByEmail ? (
-              <form
-                action={updateProviderImageAction}
-                method="post"
-                encType="multipart/form-data"
-                className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-6"
-              >
-                <input type="hidden" name="providerId" value={provider.id} />
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">Reemplazar imagen</p>
-                    <p className="text-xs text-[color:var(--muted)]">
-                      Solo tú puedes actualizar la imagen de este proveedor.
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    name="imageFile"
-                    accept="image/*"
-                    className="block w-full rounded-[0.85rem] border border-[color:var(--line)] bg-[color:var(--panel)] px-4 py-3 text-sm text-[color:var(--ink)]"
-                  />
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center rounded-full bg-[color:var(--brand)] px-4 py-2 text-sm font-semibold text-white hover:bg-[color:var(--brand)]/90"
-                  >
-                    Actualizar imagen
-                  </button>
-                </div>
-              </form>
-            ) : session?.user?.email ? (
-              <div className="rounded-[1.5rem] border border-[color:var(--line)] bg-[color:var(--panel)] p-6 text-sm text-[color:var(--muted)]">
-                Solo la persona que agregó esta entrada puede reemplazar la imagen.
-              </div>
-            ) : null}
 
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <div className="info-chip">
@@ -144,9 +108,7 @@ export default async function ProviderDetailPage({ params }: ProviderDetailPageP
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-[color:var(--ink)]">
-                      {review.authorName}
-                    </p>
+                    <p className="text-sm font-semibold text-[color:var(--ink)]">{review.authorName}</p>
                     <p className="text-xs text-[color:var(--muted)]">{formatStars(review.rating)}</p>
                   </div>
                   <p className="text-xs text-[color:var(--muted)]">

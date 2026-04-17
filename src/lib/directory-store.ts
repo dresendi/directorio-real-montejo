@@ -7,7 +7,10 @@ import { ObjectId } from "mongodb";
 
 import { categories } from "@/lib/directory-catalog";
 import { getMongoClient, isMongoConfigured } from "@/lib/mongodb";
-import { defaultProviderImageUrl } from "@/lib/provider-images";
+import {
+  defaultProviderImageUrl,
+  legacyDefaultProviderImageUrls,
+} from "@/lib/provider-images";
 import type {
   DirectoryStore,
   DirectorySummary,
@@ -18,78 +21,37 @@ import type {
 
 const dataDirectoryPath = path.join(process.cwd(), "data");
 const dataFilePath = path.join(dataDirectoryPath, "directory.json");
-const legacyDefaultProviderImageUrl =
-  "https://upload.wikimedia.org/wikipedia/commons/f/fa/Plumber_at_work.jpg";
-const seedAuthorName = "Equipo Directorio Real Montejo";
 const seedAuthorEmail = "equipo@realmontejo.mx";
-const sampleReviewerNames = [
-  "Laura Medina",
-  "Carlos Herrera",
-  "Sofia Castillo",
-  "Miguel Pacheco",
-  "Elena Chan",
-];
+const demoEmailDomain = "@example.com";
+const defaultStore: DirectoryStore = {
+  providers: [],
+  reviews: [],
+};
 
-function getSamplePhoneDigits(index: number) {
-  return `999${String(1000000 + index).padStart(7, "0")}`;
-}
+let writeQueue = Promise.resolve();
 
-function formatPhone(phoneDigits: string) {
-  return `${phoneDigits.slice(0, 3)} ${phoneDigits.slice(3, 6)} ${phoneDigits.slice(6)}`;
-}
-
-function createSeedProvider(categoryId: string, index: number): StoredProvider {
-  const category = categories.find((entry) => entry.id === categoryId) ?? categories[0];
-  const phoneDigits = getSamplePhoneDigits(index);
-  const providerName = `Servicios ${category.label} Real Montejo`;
-
-  return {
-    id: `seed-${category.id}`,
-    slug: createSlug(providerName),
-    name: providerName,
-    categoryId: category.id,
-    imageUrl: defaultProviderImageUrl,
-    description: `${category.description} Atencion disponible en Real Montejo y colonias cercanas, con trato amable y tiempos de respuesta claros.`,
-    phone: formatPhone(phoneDigits),
-    whatsappUrl: `https://wa.me/52${phoneDigits}`,
-    serviceArea: "Real Montejo y sus alrededores",
-    createdAt: new Date(Date.UTC(2026, 0, (index % 28) + 1, 15, 0, 0)).toISOString(),
-    createdByName: seedAuthorName,
-    createdByEmail: seedAuthorEmail,
-  };
-}
-
-function createSeedReview(providerId: string, categoryId: string, index: number): StoredReview {
-  const category = categories.find((entry) => entry.id === categoryId) ?? categories[0];
-  const reviewerName = sampleReviewerNames[index % sampleReviewerNames.length];
-
-  return {
-    id: `seed-review-${category.id}`,
-    providerId,
-    rating: index % 4 === 0 ? 5 : 4,
-    comment: `Muy buen servicio de ${category.label.toLowerCase()}, puntual y recomendado por vecinos de Real Montejo.`,
-    createdAt: new Date(Date.UTC(2026, 1, (index % 28) + 1, 18, 30, 0)).toISOString(),
-    authorName: reviewerName,
-    authorEmail: `${createSlug(reviewerName)}@example.com`,
-  };
-}
-
-function createSeedStore(): DirectoryStore {
-  const providers = categories.map((category, index) => createSeedProvider(category.id, index));
-  const reviews = providers.map((provider, index) =>
-    createSeedReview(provider.id, provider.categoryId, index),
+function isDemoProvider(provider: StoredProvider) {
+  return (
+    provider.id.startsWith("seed-") ||
+    provider.id.startsWith("provider-") ||
+    provider.createdByEmail === seedAuthorEmail ||
+    provider.createdByEmail.endsWith(demoEmailDomain)
   );
-
-  return {
-    providers,
-    reviews,
-  };
 }
 
-function hydrateStoreWithSeedData(store: DirectoryStore) {
+function isDemoReview(review: StoredReview, demoProviderIds: Set<string>) {
+  return (
+    review.id.startsWith("seed-review-") ||
+    demoProviderIds.has(review.providerId) ||
+    review.authorEmail.endsWith(demoEmailDomain)
+  );
+}
+
+function normalizeStore(store: DirectoryStore) {
   let changed = false;
   const seenProviderIds = new Set<string>();
-  const providers = store.providers.reduce<StoredProvider[]>((result, provider) => {
+  const demoProviderIds = new Set<string>();
+  const providers = (store.providers ?? []).reduce<StoredProvider[]>((result, provider) => {
     if (seenProviderIds.has(provider.id)) {
       changed = true;
       return result;
@@ -97,51 +59,47 @@ function hydrateStoreWithSeedData(store: DirectoryStore) {
 
     seenProviderIds.add(provider.id);
 
-    if (provider.imageUrl && provider.imageUrl !== legacyDefaultProviderImageUrl) {
-      result.push(provider);
+    if (isDemoProvider(provider)) {
+      demoProviderIds.add(provider.id);
+      changed = true;
       return result;
     }
 
-    changed = true;
+    const normalizedImageUrl =
+      provider.imageUrl && !legacyDefaultProviderImageUrls.includes(provider.imageUrl)
+        ? provider.imageUrl
+        : defaultProviderImageUrl;
+
+    if (normalizedImageUrl !== provider.imageUrl) {
+      changed = true;
+    }
+
     result.push({
       ...provider,
-      imageUrl: defaultProviderImageUrl,
+      imageUrl: normalizedImageUrl,
     });
 
     return result;
   }, []);
 
-  const categoriesWithProviders = new Set(providers.map((provider) => provider.categoryId));
-  const missingProviders = categories
-    .filter((category) => !categoriesWithProviders.has(category.id))
-    .map((category, index) => createSeedProvider(category.id, providers.length + index));
-
-  if (missingProviders.length > 0) {
-    changed = true;
-    providers.push(...missingProviders);
-  }
-
+  const activeProviderIds = new Set(providers.map((provider) => provider.id));
   const seenReviewIds = new Set<string>();
-  const reviews = store.reviews.reduce<StoredReview[]>((result, review) => {
+  const reviews = (store.reviews ?? []).reduce<StoredReview[]>((result, review) => {
     if (seenReviewIds.has(review.id)) {
       changed = true;
       return result;
     }
 
     seenReviewIds.add(review.id);
+
+    if (!activeProviderIds.has(review.providerId) || isDemoReview(review, demoProviderIds)) {
+      changed = true;
+      return result;
+    }
+
     result.push(review);
     return result;
   }, []);
-  const reviewedProviderIds = new Set(reviews.map((review) => review.providerId));
-
-  for (const provider of missingProviders) {
-    if (reviewedProviderIds.has(provider.id)) {
-      continue;
-    }
-
-    changed = true;
-    reviews.push(createSeedReview(provider.id, provider.categoryId, reviews.length));
-  }
 
   return {
     changed,
@@ -151,10 +109,6 @@ function hydrateStoreWithSeedData(store: DirectoryStore) {
     },
   };
 }
-
-const defaultStore: DirectoryStore = createSeedStore();
-
-let writeQueue = Promise.resolve();
 
 async function ensureStoreFile() {
   await mkdir(dataDirectoryPath, { recursive: true });
@@ -169,13 +123,13 @@ async function ensureStoreFile() {
 async function readStore(): Promise<DirectoryStore> {
   await ensureStoreFile();
   const rawStore = await readFile(dataFilePath, "utf8");
-  const hydratedStore = hydrateStoreWithSeedData(JSON.parse(rawStore) as DirectoryStore);
+  const normalizedStore = normalizeStore(JSON.parse(rawStore) as DirectoryStore);
 
-  if (hydratedStore.changed) {
-    await writeStore(hydratedStore.store);
+  if (normalizedStore.changed) {
+    await writeStore(normalizedStore.store);
   }
 
-  return hydratedStore.store;
+  return normalizedStore.store;
 }
 
 async function writeStore(store: DirectoryStore) {
@@ -187,9 +141,7 @@ async function getMongoDatabase() {
   return client.db(process.env.MONGODB_DB_NAME || "real-montejo-directory");
 }
 
-function normalizeMongoProvider(
-  provider: StoredProvider & { _id?: ObjectId },
-): StoredProvider {
+function normalizeMongoProvider(provider: StoredProvider & { _id?: ObjectId }): StoredProvider {
   return {
     id: provider.id,
     slug: provider.slug,
@@ -223,10 +175,7 @@ async function replaceMongoStore(store: DirectoryStore) {
   const providersCollection = database.collection<StoredProvider>("providers");
   const reviewsCollection = database.collection<StoredReview>("reviews");
 
-  await Promise.all([
-    providersCollection.deleteMany({}),
-    reviewsCollection.deleteMany({}),
-  ]);
+  await Promise.all([providersCollection.deleteMany({}), reviewsCollection.deleteMany({})]);
 
   if (store.providers.length > 0) {
     await providersCollection.insertMany(store.providers);
@@ -237,27 +186,7 @@ async function replaceMongoStore(store: DirectoryStore) {
   }
 }
 
-async function ensureMongoSeeded() {
-  const database = await getMongoDatabase();
-  const providersCollection = database.collection<StoredProvider>("providers");
-  const reviewsCollection = database.collection<StoredReview>("reviews");
-
-  const providerCount = await providersCollection.countDocuments();
-
-  if (providerCount === 0) {
-    await providersCollection.insertMany(defaultStore.providers);
-  }
-
-  const reviewCount = await reviewsCollection.countDocuments();
-
-  if (reviewCount === 0) {
-    await reviewsCollection.insertMany(defaultStore.reviews);
-  }
-}
-
 async function readMongoStore(): Promise<DirectoryStore> {
-  await ensureMongoSeeded();
-
   const database = await getMongoDatabase();
   const providersCollection = database.collection<StoredProvider>("providers");
   const reviewsCollection = database.collection<StoredReview>("reviews");
@@ -267,16 +196,16 @@ async function readMongoStore(): Promise<DirectoryStore> {
     reviewsCollection.find({}).toArray(),
   ]);
 
-  const hydratedStore = hydrateStoreWithSeedData({
+  const normalizedStore = normalizeStore({
     providers: providers.map(normalizeMongoProvider),
     reviews: reviews.map(normalizeMongoReview),
   });
 
-  if (hydratedStore.changed) {
-    await replaceMongoStore(hydratedStore.store);
+  if (normalizedStore.changed) {
+    await replaceMongoStore(normalizedStore.store);
   }
 
-  return hydratedStore.store;
+  return normalizedStore.store;
 }
 
 export async function updateStore<T>(

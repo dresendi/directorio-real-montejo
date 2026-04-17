@@ -60,7 +60,7 @@ export async function addProviderAction(
   if (!session?.user?.email) {
     return {
       status: "error",
-      message: "Inicia sesión con Google para agregar un proveedor.",
+      message: "Inicia sesion con Google para agregar un proveedor.",
     };
   }
 
@@ -79,11 +79,11 @@ export async function addProviderAction(
   }
 
   if (!categories.some((category) => category.id === categoryId)) {
-    errors.categoryId = "Selecciona una categoría válida.";
+    errors.categoryId = "Selecciona una categoria valida.";
   }
 
   if (description.length < 20) {
-    errors.description = "Agrega una descripción más completa de al menos 20 caracteres.";
+    errors.description = "Agrega una descripcion mas completa de al menos 20 caracteres.";
   }
 
   if (imageResult.error) {
@@ -91,7 +91,7 @@ export async function addProviderAction(
   }
 
   if (phone.length < 8) {
-    errors.phone = "Agrega un teléfono de contacto válido.";
+    errors.phone = "Agrega un telefono de contacto valido.";
   }
 
   if (serviceArea.length < 5) {
@@ -105,7 +105,7 @@ export async function addProviderAction(
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
-      message: "Revisa los campos marcados e inténtalo de nuevo.",
+      message: "Revisa los campos marcados e intentalo de nuevo.",
       errors,
     };
   }
@@ -139,7 +139,7 @@ export async function updateProviderImageAction(
   if (!session?.user?.email) {
     return {
       status: "error",
-      message: "Inicia sesión para reemplazar la imagen.",
+      message: "Inicia sesion para reemplazar la imagen.",
     };
   }
 
@@ -150,14 +150,14 @@ export async function updateProviderImageAction(
   if (!provider) {
     return {
       status: "error",
-      message: "El proveedor no existe o ya no está disponible.",
+      message: "El proveedor no existe o ya no esta disponible.",
     };
   }
 
   if (provider.createdByEmail !== session.user.email) {
     return {
       status: "error",
-      message: "Solo el vecino que agregó este proveedor puede cambiar la imagen.",
+      message: "Solo el vecino que agrego este proveedor puede cambiar la imagen.",
     };
   }
 
@@ -170,7 +170,7 @@ export async function updateProviderImageAction(
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
-      message: "Revisa la imagen e inténtalo de nuevo.",
+      message: "Revisa la imagen e intentalo de nuevo.",
       errors,
     };
   }
@@ -197,7 +197,7 @@ export async function addReviewAction(
   if (!session?.user?.email) {
     return {
       status: "error",
-      message: "Inicia sesión para calificar y reseñar a un proveedor.",
+      message: "Inicia sesion para calificar y resenar a un proveedor.",
     };
   }
 
@@ -209,21 +209,21 @@ export async function addReviewAction(
   const providers = await getProviderCards();
 
   if (!providers.some((provider) => provider.id === providerId)) {
-    errors.providerId = "El proveedor seleccionado ya no está disponible.";
+    errors.providerId = "El proveedor seleccionado ya no esta disponible.";
   }
 
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
-    errors.rating = "Selecciona una calificación entre 1 y 5 estrellas.";
+    errors.rating = "Selecciona una calificacion entre 1 y 5 estrellas.";
   }
 
   if (comment.length < 12) {
-    errors.comment = "Escribe una reseña breve de al menos 12 caracteres.";
+    errors.comment = "Escribe una resena breve de al menos 12 caracteres.";
   }
 
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
-      message: "Revisa los datos de la reseña e inténtalo de nuevo.",
+      message: "Revisa los datos de la resena e intentalo de nuevo.",
       errors,
     };
   }
@@ -240,6 +240,6 @@ export async function addReviewAction(
 
   return {
     status: "success",
-    message: "Tu reseña ya fue publicada.",
+    message: "Tu resena ya fue publicada.",
   };
 }
