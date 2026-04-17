@@ -356,6 +356,37 @@ export async function getProviderBySlug(slug: string) {
   };
 }
 
+export async function getProviderById(providerId: string) {
+  const store = isMongoConfigured() ? await readMongoStore() : await readStore();
+  const provider = store.providers.find((entry) => entry.id === providerId);
+
+  if (!provider) {
+    return null;
+  }
+
+  return toProviderCard(provider, store.reviews);
+}
+
+export async function updateProviderImage(input: {
+  providerId: string;
+  imageUrl: string;
+}) {
+  return updateStore(async (store) => {
+    const providerIndex = store.providers.findIndex((provider) => provider.id === input.providerId);
+
+    if (providerIndex < 0) {
+      throw new Error("Proveedor no encontrado.");
+    }
+
+    store.providers[providerIndex] = {
+      ...store.providers[providerIndex],
+      imageUrl: input.imageUrl,
+    };
+
+    return store.providers[providerIndex];
+  });
+}
+
 export async function getDirectorySummary(): Promise<DirectorySummary> {
   const providerCards = await getProviderCards();
   const reviewCount = providerCards.reduce((sum, provider) => sum + provider.reviewCount, 0);

@@ -5,7 +5,13 @@ import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth-options";
 import { categories } from "@/lib/directory-catalog";
-import { addProvider, getProviderCards, upsertReview } from "@/lib/directory-store";
+import {
+  addProvider,
+  getProviderById,
+  getProviderCards,
+  updateProviderImage,
+  upsertReview,
+} from "@/lib/directory-store";
 import {
   defaultProviderImageUrl,
   maxProviderImageSizeInBytes,
@@ -121,6 +127,64 @@ export async function addProviderAction(
   return {
     status: "success",
     message: "Proveedor agregado correctamente.",
+  };
+}
+
+export async function updateProviderImageAction(
+  previousState: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    return {
+      status: "error",
+      message: "Inicia sesión para reemplazar la imagen.",
+    };
+  }
+
+  const providerId = readText(formData, "providerId");
+  const imageResult = await readProviderImage(formData);
+  const provider = await getProviderById(providerId);
+
+  if (!provider) {
+    return {
+      status: "error",
+      message: "El proveedor no existe o ya no está disponible.",
+    };
+  }
+
+  if (provider.createdByEmail !== session.user.email) {
+    return {
+      status: "error",
+      message: "Solo el vecino que agregó este proveedor puede cambiar la imagen.",
+    };
+  }
+
+  const errors: Record<string, string> = {};
+
+  if (imageResult.error) {
+    errors.imageUrl = imageResult.error;
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return {
+      status: "error",
+      message: "Revisa la imagen e inténtalo de nuevo.",
+      errors,
+    };
+  }
+
+  await updateProviderImage({
+    providerId,
+    imageUrl: imageResult.imageUrl ?? defaultProviderImageUrl,
+  });
+
+  revalidatePath(`/proveedores/${provider.slug}`);
+
+  return {
+    status: "success",
+    message: "Imagen actualizada correctamente.",
   };
 }
 
