@@ -40,6 +40,7 @@ export default async function Home({ searchParams }: HomePageProps) {
   const selectedCategory = getSearchParamValue(filters.category);
   const searchQuery = getSearchParamValue(filters.query);
   const rawSortBy = getSearchParamValue(filters.sort) || "rating";
+  const hasActiveFilters = Boolean(selectedCategory || searchQuery || getSearchParamValue(filters.sort));
   const sortBy: ProviderSort =
     rawSortBy === "alphabetical" ||
     rawSortBy === "rating" ||
@@ -55,7 +56,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     }),
     sortBy,
   );
-  const shouldShowTopProviders = !selectedCategory && !searchQuery && !getSearchParamValue(filters.sort);
+  const shouldShowTopProviders = !hasActiveFilters;
   const visibleProviders = shouldShowTopProviders
     ? sortProvidersByRanking(providerCards).slice(0, 5)
     : filteredProviders;
@@ -231,7 +232,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               ))
             ) : (
               <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] p-7 text-center text-sm text-[color:var(--muted)]">
-                No encontramos proveedores con esos filtros. Prueba otra busqueda o categoria.
+                No se encontro nada.
               </div>
             )}
           </div>

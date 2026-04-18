@@ -40,10 +40,10 @@ export function ProviderForm() {
         </label>
 
         <label className="space-y-2">
-          <span className="field-label">Categoría</span>
+          <span className="field-label">Categoria</span>
           <select className="field-input" name="categoryId" defaultValue="">
             <option value="" disabled>
-              Selecciona una categoría
+              Selecciona una categoria
             </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -56,15 +56,15 @@ export function ProviderForm() {
       </div>
 
       <label className="space-y-2">
-        <span className="field-label">Descripción</span>
+        <span className="field-label">Descripcion</span>
         <textarea
           className="field-input min-h-28"
           name="description"
-          placeholder="¿Qué tipo de trabajo hace bien este proveedor?"
+          placeholder="Que tipo de trabajo hace bien este proveedor?"
         />
         <FieldMessage
           error={state.errors?.description}
-          hint="Menciona especialidades, tiempos de respuesta o por qué lo recomiendan."
+          hint="Menciona especialidades, tiempos de respuesta o por que lo recomiendan."
         />
       </label>
 
@@ -83,17 +83,14 @@ export function ProviderForm() {
         />
       </label>
 
-      <div className="grid gap-5 md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-2">
         <label className="space-y-2">
-          <span className="field-label">Teléfono</span>
+          <span className="field-label">Telefono</span>
           <input className="field-input" name="phone" placeholder="999 123 4567" />
-          <FieldMessage error={state.errors?.phone} />
-        </label>
-
-        <label className="space-y-2">
-          <span className="field-label">URL de WhatsApp</span>
-          <input className="field-input" name="whatsappUrl" placeholder="https://wa.me/529991234567" />
-          <FieldMessage error={state.errors?.whatsappUrl} hint="Es opcional, pero ayuda mucho para contactar." />
+          <FieldMessage
+            error={state.errors?.phone}
+            hint="Usaremos este numero para crear automaticamente el enlace de WhatsApp."
+          />
         </label>
 
         <label className="space-y-2">
@@ -122,7 +119,7 @@ export function ProviderForm() {
             </p>
           ) : (
             <p className="text-sm text-[color:var(--muted)]">
-              Los nombres internos y variables siguen en inglés para mantener buenas prácticas.
+              Los nombres internos y variables siguen en ingles para mantener buenas practicas.
             </p>
           )}
         </div>

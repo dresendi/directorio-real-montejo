@@ -22,6 +22,16 @@ function readText(formData: FormData, fieldName: string) {
   return String(formData.get(fieldName) ?? "").trim();
 }
 
+function buildWhatsappUrl(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+
+  if (!digits) {
+    return "";
+  }
+
+  return `https://wa.me/${digits}`;
+}
+
 async function readProviderImage(formData: FormData) {
   const imageFile = formData.get("imageFile");
 
@@ -68,7 +78,6 @@ export async function addProviderAction(
   const categoryId = readText(formData, "categoryId");
   const description = readText(formData, "description");
   const phone = readText(formData, "phone");
-  const whatsappUrl = readText(formData, "whatsappUrl");
   const serviceArea = readText(formData, "serviceArea");
 
   const errors: Record<string, string> = {};
@@ -98,10 +107,6 @@ export async function addProviderAction(
     errors.serviceArea = "Describe la zona de servicio.";
   }
 
-  if (whatsappUrl && !/^https:\/\/wa\.me\/\d{10,15}$/u.test(whatsappUrl)) {
-    errors.whatsappUrl = "Usa un enlace de WhatsApp con el formato https://wa.me/521234567890.";
-  }
-
   if (Object.keys(errors).length > 0) {
     return {
       status: "error",
@@ -116,7 +121,7 @@ export async function addProviderAction(
     imageUrl: imageResult.imageUrl ?? defaultProviderImageUrl,
     description,
     phone,
-    whatsappUrl,
+    whatsappUrl: buildWhatsappUrl(phone),
     serviceArea,
     createdByName: session.user.name ?? "Neighbor",
     createdByEmail: session.user.email,
