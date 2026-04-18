@@ -303,6 +303,30 @@ textarea:focus {
   color: var(--brand-strong);
 }
 
+.rating-summary {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.rating-value {
+  font-weight: 600;
+}
+
+.rating-stars {
+  color: #f4b400;
+  letter-spacing: 0.06em;
+}
+
+.rating-count {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .info-chip {
   display: flex;
   flex-direction: column;

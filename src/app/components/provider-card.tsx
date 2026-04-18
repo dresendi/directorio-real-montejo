@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 import type { ProviderCard as ProviderCardType } from "@/types/directory";
 
@@ -6,6 +6,11 @@ type ProviderCardProps = {
   provider: ProviderCardType;
   isAuthenticated?: boolean;
 };
+
+function renderRatingStars(rating: number) {
+  const roundedRating = Math.round(rating);
+  return "★".repeat(roundedRating) + "☆".repeat(5 - roundedRating);
+}
 
 export function ProviderCard({ provider }: ProviderCardProps) {
   return (
@@ -38,14 +43,30 @@ export function ProviderCard({ provider }: ProviderCardProps) {
               <span className="category-badge">{provider.category.label}</span>
             </div>
 
-            <div className="min-w-0">
-              <Link
-                href={`/proveedores/${provider.slug}`}
-                className="provider-name-link break-anywhere text-[1.28rem] font-semibold text-[color:var(--ink)]"
-              >
-                {provider.name}
-              </Link>
-              <p className="break-anywhere mt-2 max-w-2xl text-[0.88rem] leading-5 text-[color:var(--muted)]">
+            <div className="min-w-0 space-y-2">
+              <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                <Link
+                  href={`/proveedores/${provider.slug}`}
+                  className="provider-name-link break-anywhere text-[1.28rem] font-semibold text-[color:var(--ink)]"
+                >
+                  {provider.name}
+                </Link>
+                {provider.reviewCount > 0 ? (
+                  <div className="rating-summary">
+                    <span className="rating-value">{provider.averageRating.toFixed(1)}</span>
+                    <span
+                      className="rating-stars"
+                      aria-label={`${provider.averageRating.toFixed(1)} de 5 estrellas`}
+                    >
+                      {renderRatingStars(provider.averageRating)}
+                    </span>
+                    <span className="rating-count">
+                      ({provider.reviewCount} reseña{provider.reviewCount === 1 ? "" : "s"})
+                    </span>
+                  </div>
+                ) : null}
+              </div>
+              <p className="break-anywhere max-w-2xl text-[0.88rem] leading-5 text-[color:var(--muted)]">
                 {provider.description}
               </p>
             </div>
