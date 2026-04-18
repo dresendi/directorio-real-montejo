@@ -6,6 +6,8 @@ export type Category = {
   description: string;
 };
 
+export type StoredCategory = Category;
+
 export type StoredProvider = {
   id: string;
   slug: string;
@@ -32,6 +34,7 @@ export type StoredReview = {
 };
 
 export type DirectoryStore = {
+  categories: StoredCategory[];
   providers: StoredProvider[];
   reviews: StoredReview[];
 };

@@ -4,7 +4,7 @@ import { useActionState, useEffect, useRef } from "react";
 
 import { initialActionState } from "@/app/action-state";
 import { addProviderAction } from "@/app/actions";
-import { categories } from "@/lib/directory-catalog";
+import type { Category } from "@/types/directory";
 
 function FieldMessage({
   error,
@@ -20,7 +20,7 @@ function FieldMessage({
   );
 }
 
-export function ProviderForm() {
+export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] }) {
   const [state, formAction, isPending] = useActionState(addProviderAction, initialActionState);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -45,7 +45,7 @@ export function ProviderForm() {
             <option value="" disabled>
               Selecciona una categoria
             </option>
-            {categories.map((category) => (
+            {categoryOptions.map((category) => (
               <option key={category.id} value={category.id}>
                 {category.label}
               </option>

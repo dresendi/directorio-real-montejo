@@ -1,6 +1,6 @@
 import type { Category } from "@/types/directory";
 
-const rawCategories: Category[] = [
+export const rawCategories: Category[] = [
   {
     id: "carpenter",
     label: "Carpintero",
@@ -218,6 +218,10 @@ const rawCategories: Category[] = [
   },
 ];
 
-export const categories = rawCategories.toSorted((left, right) =>
-  left.label.localeCompare(right.label, "es-MX", { sensitivity: "base" }),
-);
+export function sortCategories(categoryOptions: Category[]) {
+  return categoryOptions.toSorted((left, right) =>
+    left.label.localeCompare(right.label, "es-MX", { sensitivity: "base" }),
+  );
+}
+
+export const categories = sortCategories(rawCategories);

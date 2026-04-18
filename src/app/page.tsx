@@ -9,8 +9,11 @@ import { ReviewForm } from "@/app/components/review-form";
 import { SignInButton } from "@/app/components/sign-in-button";
 import { SignOutButton } from "@/app/components/sign-out-button";
 import { authOptions, getEnabledAuthProviders } from "@/lib/auth-options";
-import { categories } from "@/lib/directory-catalog";
-import { getDirectorySummary, getProviderCards } from "@/lib/directory-store";
+import {
+  getDirectoryCategories,
+  getDirectorySummary,
+  getProviderCards,
+} from "@/lib/directory-store";
 import {
   filterProviders,
   formatStars,
@@ -29,11 +32,12 @@ type HomePageProps = {
 };
 
 export default async function Home({ searchParams }: HomePageProps) {
-  const [filters, session, summary, providerCards] = await Promise.all([
+  const [filters, session, summary, providerCards, categoryOptions] = await Promise.all([
     searchParams,
     getServerSession(authOptions),
     getDirectorySummary(),
     getProviderCards(),
+    getDirectoryCategories(),
   ]);
 
   const enabledProviders = getEnabledAuthProviders();
@@ -170,7 +174,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             }
           >
             <ProviderFilters
-              categoryOptions={categories}
+              categoryOptions={categoryOptions}
               searchQuery={searchQuery}
               selectedCategory={selectedCategory}
               sortBy={sortBy}
@@ -196,7 +200,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               <span className="field-label">Categoría</span>
               <select className="field-input" defaultValue={selectedCategory} name="category">
                 <option value="">Todas las categorías</option>
-                {categories.map((category) => (
+                {categoryOptions.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.label}
                   </option>
@@ -375,7 +379,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               <h2 className="section-title">Agrega un proveedor</h2>
             </div>
             {session?.user?.email ? (
-              <ProviderForm />
+              <ProviderForm categoryOptions={categoryOptions} />
             ) : (
               <div className="space-y-4 rounded-[1.5rem] bg-[color:var(--panel)] p-5">
                 <p className="text-sm leading-7 text-[color:var(--muted)]">
@@ -401,7 +405,7 @@ export default async function Home({ searchParams }: HomePageProps) {
             </div>
 
             <div className="grid gap-3">
-              {categories.map((category) => {
+              {categoryOptions.map((category) => {
                 const providerCount = providerCards.filter(
                   (provider) => provider.categoryId === category.id,
                 ).length;

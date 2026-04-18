@@ -3,18 +3,20 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { ObjectId } from "mongodb";
+import { Collection, ObjectId } from "mongodb";
 
-import { categories } from "@/lib/directory-catalog";
+import { categories as fallbackCategories, rawCategories, sortCategories } from "@/lib/directory-catalog";
 import { getMongoClient, isMongoConfigured } from "@/lib/mongodb";
 import {
   defaultProviderImageUrl,
   legacyDefaultProviderImageUrls,
 } from "@/lib/provider-images";
 import type {
+  Category,
   DirectoryStore,
   DirectorySummary,
   ProviderCard,
+  StoredCategory,
   StoredProvider,
   StoredReview,
 } from "@/types/directory";
@@ -24,6 +26,7 @@ const dataFilePath = path.join(dataDirectoryPath, "directory.json");
 const seedAuthorEmail = "equipo@realmontejo.mx";
 const demoEmailDomain = "@example.com";
 const defaultStore: DirectoryStore = {
+  categories: fallbackCategories,
   providers: [],
   reviews: [],
 };
@@ -47,8 +50,42 @@ function isDemoReview(review: StoredReview, demoProviderIds: Set<string>) {
   );
 }
 
+function normalizeCategories(inputCategories?: StoredCategory[]) {
+  let changed = false;
+  const mergedCategories = new Map<string, StoredCategory>();
+
+  for (const category of inputCategories ?? []) {
+    if (!mergedCategories.has(category.id)) {
+      mergedCategories.set(category.id, category);
+    } else {
+      changed = true;
+    }
+  }
+
+  for (const category of rawCategories) {
+    if (!mergedCategories.has(category.id)) {
+      mergedCategories.set(category.id, category);
+      changed = true;
+    }
+  }
+
+  const categories = sortCategories([...mergedCategories.values()]);
+
+  return {
+    changed,
+    categories,
+  };
+}
+
 function normalizeStore(store: DirectoryStore) {
   let changed = false;
+  const normalizedCategories = normalizeCategories(store.categories);
+
+  if (normalizedCategories.changed) {
+    changed = true;
+  }
+
+  const categoryIds = new Set(normalizedCategories.categories.map((category) => category.id));
   const seenProviderIds = new Set<string>();
   const demoProviderIds = new Set<string>();
   const providers = (store.providers ?? []).reduce<StoredProvider[]>((result, provider) => {
@@ -59,7 +96,7 @@ function normalizeStore(store: DirectoryStore) {
 
     seenProviderIds.add(provider.id);
 
-    if (isDemoProvider(provider)) {
+    if (isDemoProvider(provider) || !categoryIds.has(provider.categoryId)) {
       demoProviderIds.add(provider.id);
       changed = true;
       return result;
@@ -104,6 +141,7 @@ function normalizeStore(store: DirectoryStore) {
   return {
     changed,
     store: {
+      categories: normalizedCategories.categories,
       providers,
       reviews,
     },
@@ -141,6 +179,14 @@ async function getMongoDatabase() {
   return client.db(process.env.MONGODB_DB_NAME || "real-montejo-directory");
 }
 
+function normalizeMongoCategory(category: StoredCategory & { _id?: ObjectId }): StoredCategory {
+  return {
+    id: category.id,
+    label: category.label,
+    description: category.description,
+  };
+}
+
 function normalizeMongoProvider(provider: StoredProvider & { _id?: ObjectId }): StoredProvider {
   return {
     id: provider.id,
@@ -170,12 +216,25 @@ function normalizeMongoReview(review: StoredReview & { _id?: ObjectId }): Stored
   };
 }
 
+async function syncMongoCategories(categoriesCollection: Collection<StoredCategory>) {
+  for (const category of rawCategories) {
+    await categoriesCollection.updateOne(
+      { id: category.id },
+      { $setOnInsert: category },
+      { upsert: true },
+    );
+  }
+}
+
 async function replaceMongoStore(store: DirectoryStore) {
   const database = await getMongoDatabase();
+  const categoriesCollection = database.collection<StoredCategory>("categories");
   const providersCollection = database.collection<StoredProvider>("providers");
   const reviewsCollection = database.collection<StoredReview>("reviews");
 
   await Promise.all([providersCollection.deleteMany({}), reviewsCollection.deleteMany({})]);
+
+  await syncMongoCategories(categoriesCollection);
 
   if (store.providers.length > 0) {
     await providersCollection.insertMany(store.providers);
@@ -188,15 +247,20 @@ async function replaceMongoStore(store: DirectoryStore) {
 
 async function readMongoStore(): Promise<DirectoryStore> {
   const database = await getMongoDatabase();
+  const categoriesCollection = database.collection<StoredCategory>("categories");
   const providersCollection = database.collection<StoredProvider>("providers");
   const reviewsCollection = database.collection<StoredReview>("reviews");
 
-  const [providers, reviews] = await Promise.all([
+  await syncMongoCategories(categoriesCollection);
+
+  const [categories, providers, reviews] = await Promise.all([
+    categoriesCollection.find({}).toArray(),
     providersCollection.find({}).toArray(),
     reviewsCollection.find({}).toArray(),
   ]);
 
   const normalizedStore = normalizeStore({
+    categories: categories.map(normalizeMongoCategory),
     providers: providers.map(normalizeMongoProvider),
     reviews: reviews.map(normalizeMongoReview),
   });
@@ -206,6 +270,15 @@ async function readMongoStore(): Promise<DirectoryStore> {
   }
 
   return normalizedStore.store;
+}
+
+async function readDirectoryStore() {
+  return isMongoConfigured() ? readMongoStore() : readStore();
+}
+
+export async function getDirectoryCategories(): Promise<Category[]> {
+  const store = await readDirectoryStore();
+  return sortCategories(store.categories);
 }
 
 export async function updateStore<T>(
@@ -235,8 +308,8 @@ export async function updateStore<T>(
   return nextTask;
 }
 
-function getCategoryById(categoryId: string) {
-  return categories.find((category) => category.id === categoryId) ?? categories[0];
+function getCategoryById(categoryOptions: Category[], categoryId: string) {
+  return categoryOptions.find((category) => category.id === categoryId) ?? categoryOptions[0] ?? fallbackCategories[0];
 }
 
 function getProviderReviews(reviews: StoredReview[], providerId: string) {
@@ -254,12 +327,16 @@ function getAverageRating(reviews: StoredReview[]) {
   return total / reviews.length;
 }
 
-function toProviderCard(provider: StoredProvider, reviews: StoredReview[]): ProviderCard {
+function toProviderCard(
+  provider: StoredProvider,
+  reviews: StoredReview[],
+  categoryOptions: Category[],
+): ProviderCard {
   const providerReviews = getProviderReviews(reviews, provider.id);
 
   return {
     ...provider,
-    category: getCategoryById(provider.categoryId),
+    category: getCategoryById(categoryOptions, provider.categoryId),
     averageRating: getAverageRating(providerReviews),
     reviewCount: providerReviews.length,
     latestReview: providerReviews[0] ?? null,
@@ -267,12 +344,12 @@ function toProviderCard(provider: StoredProvider, reviews: StoredReview[]): Prov
 }
 
 export async function getProviderCards() {
-  const store = isMongoConfigured() ? await readMongoStore() : await readStore();
-  return store.providers.map((provider) => toProviderCard(provider, store.reviews));
+  const store = await readDirectoryStore();
+  return store.providers.map((provider) => toProviderCard(provider, store.reviews, store.categories));
 }
 
 export async function getProviderBySlug(slug: string) {
-  const store = isMongoConfigured() ? await readMongoStore() : await readStore();
+  const store = await readDirectoryStore();
   const provider = store.providers.find((entry) => entry.slug === slug);
 
   if (!provider) {
@@ -280,20 +357,20 @@ export async function getProviderBySlug(slug: string) {
   }
 
   return {
-    provider: toProviderCard(provider, store.reviews),
+    provider: toProviderCard(provider, store.reviews, store.categories),
     reviews: getProviderReviews(store.reviews, provider.id),
   };
 }
 
 export async function getProviderById(providerId: string) {
-  const store = isMongoConfigured() ? await readMongoStore() : await readStore();
+  const store = await readDirectoryStore();
   const provider = store.providers.find((entry) => entry.id === providerId);
 
   if (!provider) {
     return null;
   }
 
-  return toProviderCard(provider, store.reviews);
+  return toProviderCard(provider, store.reviews, store.categories);
 }
 
 export async function updateProviderImage(input: {
@@ -317,7 +394,10 @@ export async function updateProviderImage(input: {
 }
 
 export async function getDirectorySummary(): Promise<DirectorySummary> {
-  const providerCards = await getProviderCards();
+  const [providerCards, categoryOptions] = await Promise.all([
+    getProviderCards(),
+    getDirectoryCategories(),
+  ]);
   const reviewCount = providerCards.reduce((sum, provider) => sum + provider.reviewCount, 0);
 
   return {
@@ -326,7 +406,7 @@ export async function getDirectorySummary(): Promise<DirectorySummary> {
     topRatedCount: providerCards.filter(
       (provider) => provider.reviewCount > 0 && provider.averageRating >= 4.5,
     ).length,
-    categoryCount: categories.length,
+    categoryCount: categoryOptions.length,
   };
 }
 

@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { authOptions } from "@/lib/auth-options";
-import { categories } from "@/lib/directory-catalog";
 import {
   addProvider,
+  getDirectoryCategories,
   getProviderById,
   getProviderCards,
   updateProviderImage,
@@ -79,6 +79,7 @@ export async function addProviderAction(
   const description = readText(formData, "description");
   const phone = readText(formData, "phone");
   const serviceArea = readText(formData, "serviceArea");
+  const categoryOptions = await getDirectoryCategories();
 
   const errors: Record<string, string> = {};
   const imageResult = await readProviderImage(formData);
@@ -87,7 +88,7 @@ export async function addProviderAction(
     errors.name = "Escribe al menos 3 caracteres para el nombre del proveedor.";
   }
 
-  if (!categories.some((category) => category.id === categoryId)) {
+  if (!categoryOptions.some((category) => category.id === categoryId)) {
     errors.categoryId = "Selecciona una categoria valida.";
   }
 

@@ -5,8 +5,7 @@ import { getServerSession } from "next-auth";
 import { ProviderCard } from "@/app/components/provider-card";
 import { ProviderFilters } from "@/app/components/provider-filters";
 import { authOptions } from "@/lib/auth-options";
-import { categories } from "@/lib/directory-catalog";
-import { getProviderCards } from "@/lib/directory-store";
+import { getDirectoryCategories, getProviderCards } from "@/lib/directory-store";
 import { getSearchParamValue, sortProviders, type ProviderSort } from "@/lib/provider-directory";
 
 type CategoryPageProps = {
@@ -15,14 +14,15 @@ type CategoryPageProps = {
 };
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
-  const [{ categoryId }, filters, session, providerCards] = await Promise.all([
+  const [{ categoryId }, filters, session, providerCards, categoryOptions] = await Promise.all([
     params,
     searchParams,
     getServerSession(authOptions),
     getProviderCards(),
+    getDirectoryCategories(),
   ]);
 
-  const category = categories.find((entry) => entry.id === categoryId);
+  const category = categoryOptions.find((entry) => entry.id === categoryId);
   const rawSortBy = getSearchParamValue(filters.sort) || "alphabetical";
   const sortBy: ProviderSort =
     rawSortBy === "rating" || rawSortBy === "reviews" || rawSortBy === "recent"
