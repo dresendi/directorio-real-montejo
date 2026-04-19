@@ -22,6 +22,8 @@ import {
   type ProviderSort,
 } from "@/lib/provider-directory";
 
+export const dynamic = "force-dynamic";
+
 type HomePageProps = {
   searchParams: Promise<{
     category?: string | string[];

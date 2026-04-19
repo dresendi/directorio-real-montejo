@@ -8,6 +8,8 @@ import { authOptions } from "@/lib/auth-options";
 import { getDirectoryCategories, getProviderCards } from "@/lib/directory-store";
 import { getSearchParamValue, sortProviders, type ProviderSort } from "@/lib/provider-directory";
 
+export const dynamic = "force-dynamic";
+
 type CategoryPageProps = {
   params: Promise<{ categoryId: string }>;
   searchParams: Promise<{ sort?: string | string[] }>;
