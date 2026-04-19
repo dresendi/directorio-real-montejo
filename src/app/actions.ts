@@ -23,7 +23,13 @@ function readText(formData: FormData, fieldName: string) {
 }
 
 function buildWhatsappUrl(phone: string) {
-  const digits = phone.replace(/\D/g, "");
+  const rawDigits = phone.replace(/\D/g, "");
+
+  if (!rawDigits) {
+    return "";
+  }
+
+  const digits = rawDigits.startsWith("52") ? rawDigits : `52${rawDigits}`;
 
   if (!digits) {
     return "";

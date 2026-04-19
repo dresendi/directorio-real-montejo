@@ -87,7 +87,6 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
           type="file"
           name="imageFile"
           accept="image/*"
-          capture="environment"
         />
         <FieldMessage
           error={state.errors?.imageUrl}

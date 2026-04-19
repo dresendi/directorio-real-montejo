@@ -33,6 +33,21 @@ const defaultStore: DirectoryStore = {
 
 let writeQueue = Promise.resolve();
 
+function normalizeWhatsappUrl(phone: string, whatsappUrl: string) {
+  const phoneDigits = phone.replace(/\D/g, "");
+  const whatsappDigits = whatsappUrl.replace(/\D/g, "");
+
+  const baseDigits = phoneDigits || whatsappDigits;
+
+  if (!baseDigits) {
+    return "";
+  }
+
+  const normalizedDigits = baseDigits.startsWith("52") ? baseDigits : `52${baseDigits}`;
+
+  return `https://wa.me/${normalizedDigits}`;
+}
+
 function isDemoProvider(provider: StoredProvider) {
   return (
     provider.id.startsWith("seed-") ||
@@ -106,14 +121,20 @@ function normalizeStore(store: DirectoryStore) {
       provider.imageUrl && !legacyDefaultProviderImageUrls.includes(provider.imageUrl)
         ? provider.imageUrl
         : defaultProviderImageUrl;
+    const normalizedWhatsappUrl = normalizeWhatsappUrl(provider.phone, provider.whatsappUrl);
 
     if (normalizedImageUrl !== provider.imageUrl) {
+      changed = true;
+    }
+
+    if (normalizedWhatsappUrl !== provider.whatsappUrl) {
       changed = true;
     }
 
     result.push({
       ...provider,
       imageUrl: normalizedImageUrl,
+      whatsappUrl: normalizedWhatsappUrl,
     });
 
     return result;
