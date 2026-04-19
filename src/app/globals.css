@@ -158,14 +158,6 @@ textarea:focus {
   box-shadow: 0 16px 28px rgba(18, 99, 166, 0.18);
 }
 
-.app-logo-mark-inner {
-  font-family: var(--font-heading), serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: white;
-}
-
 .app-logo-image {
   width: 100%;
   height: 100%;
@@ -233,6 +225,12 @@ textarea:focus {
   color: var(--muted);
 }
 
+.field-label-with-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
 .field-input {
   width: 100%;
   border: 1px solid var(--line);
@@ -243,8 +241,45 @@ textarea:focus {
   font-size: 0.84rem;
 }
 
+.tooltip-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brand-strong);
+  cursor: help;
+}
+
+.info-icon {
+  font-size: 0.92rem;
+}
+
+.tooltip-bubble {
+  position: absolute;
+  left: 1.4rem;
+  top: 50%;
+  z-index: 20;
+  width: min(18rem, 70vw);
+  translate: 0 -50%;
+  border-radius: 0.9rem;
+  background: rgba(18, 48, 74, 0.96);
+  color: white;
+  padding: 0.8rem 0.9rem;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.18);
+}
+
+.tooltip-trigger:hover .tooltip-bubble,
+.tooltip-trigger:focus-visible .tooltip-bubble {
+  opacity: 1;
+}
+
 .primary-button,
-.secondary-button {
+.secondary-button,
+.danger-button,
+.whatsapp-share-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -260,25 +295,53 @@ textarea:focus {
   box-shadow: 0 18px 28px rgba(18, 99, 166, 0.22);
 }
 
-.primary-button:hover:not(:disabled) {
-  transform: translateY(-1px);
-}
-
 .secondary-button {
   border: 1px solid var(--line);
   background: white;
   color: var(--ink);
 }
 
-.secondary-button:hover:not(:disabled) {
+.danger-button {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  box-shadow: 0 18px 28px rgba(185, 28, 28, 0.24);
+}
+
+.whatsapp-share-button {
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: white;
+  box-shadow: 0 18px 28px rgba(18, 140, 126, 0.2);
+}
+
+.primary-button:hover:not(:disabled),
+.secondary-button:hover:not(:disabled),
+.danger-button:hover:not(:disabled),
+.whatsapp-share-button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.secondary-button:hover:not(:disabled) {
   border-color: rgba(18, 99, 166, 0.28);
 }
 
 .primary-button:disabled,
-.secondary-button:disabled {
+.secondary-button:disabled,
+.danger-button:disabled,
+.whatsapp-share-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.whatsapp-share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 1rem;
+  line-height: 1;
+  flex: 0 0 auto;
 }
 
 .category-badge {
@@ -384,6 +447,30 @@ textarea:focus {
   color: var(--muted);
 }
 
+.emergency-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.emergency-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(185, 28, 28, 0.16);
+  background: color-mix(in srgb, #dc2626 10%, white);
+  color: #991b1b;
+  padding: 0.78rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.emergency-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(185, 28, 28, 0.28);
+}
+
 @media (max-width: 768px) {
   .site-nav {
     flex-direction: column;
@@ -402,5 +489,11 @@ textarea:focus {
 
   .section-title {
     font-size: 1.08rem;
+  }
+
+  .tooltip-bubble {
+    left: 0;
+    top: calc(100% + 0.45rem);
+    translate: 0 0;
   }
 }

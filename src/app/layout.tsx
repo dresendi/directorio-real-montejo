@@ -38,17 +38,9 @@ export default function RootLayout({
               Directorio Real Montejo
             </Link>
             <nav className="site-nav-actions">
-              <Link href="/contacto" className="secondary-button">
-                Contacto
+              <Link href="/emergencias" className="danger-button">
+                Numeros de Emergencia
               </Link>
-              <a
-                href="https://www.paypal.com/donate/?business=AXWAU8ZVVFN4A&no_recurring=0&item_name=Hola%2C+%0ASi+esta+en+tus+manos+aportar+algo+para+mantener+esta+aplicacion+funcionando%2C+te+lo+agradecere+mucho.&currency_code=MXN"
-                target="_blank"
-                rel="noreferrer"
-                className="primary-button"
-              >
-                Donar con PayPal
-              </a>
             </nav>
           </header>
 

@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 
 import { initialActionState } from "@/app/action-state";
 import { addProviderAction } from "@/app/actions";
@@ -40,10 +42,10 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
         </label>
 
         <label className="space-y-2">
-          <span className="field-label">Categoria</span>
+          <span className="field-label">Categoría</span>
           <select className="field-input" name="categoryId" defaultValue="">
             <option value="" disabled>
-              Selecciona una categoria
+              Selecciona una categoría
             </option>
             {categoryOptions.map((category) => (
               <option key={category.id} value={category.id}>
@@ -56,15 +58,25 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
       </div>
 
       <label className="space-y-2">
-        <span className="field-label">Descripcion</span>
+        <span className="field-label field-label-with-info">
+          <span>Descripción</span>
+          <span className="tooltip-trigger" tabIndex={0} aria-label="Información sobre contenido permitido">
+            <FontAwesomeIcon icon={faCircleInfo} className="info-icon" />
+            <span className="tooltip-bubble" role="tooltip">
+              El administrador se reserva el derecho de remover cualquier entrada o imagen que no
+              corresponda al motivo establecido. Cualquier contenido que atente contra una sana
+              convivencia o incite al odio será removido y el usuario será reportado.
+            </span>
+          </span>
+        </span>
         <textarea
           className="field-input min-h-28"
           name="description"
-          placeholder="Que tipo de trabajo hace bien este proveedor?"
+          placeholder="¿Qué tipo de trabajo hace bien este proveedor?"
         />
         <FieldMessage
           error={state.errors?.description}
-          hint="Menciona especialidades, tiempos de respuesta o por que lo recomiendan."
+          hint="Menciona especialidades, tiempos de respuesta o por qué lo recomiendan."
         />
       </label>
 
@@ -79,17 +91,17 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
         />
         <FieldMessage
           error={state.errors?.imageUrl}
-          hint="Opcional. Puedes tomar una foto con tu camara o elegir una imagen de tu dispositivo. Si no subes nada, se usara la imagen predeterminada."
+          hint="Opcional. Puedes tomar una foto con tu cámara o elegir una imagen de tu dispositivo. Si no subes nada, se usará la imagen predeterminada."
         />
       </label>
 
       <div className="grid gap-5 md:grid-cols-2">
         <label className="space-y-2">
-          <span className="field-label">Telefono</span>
+          <span className="field-label">Teléfono</span>
           <input className="field-input" name="phone" placeholder="999 123 4567" />
           <FieldMessage
             error={state.errors?.phone}
-            hint="Usaremos este numero para crear automaticamente el enlace de WhatsApp."
+            hint="Usaremos este número para crear automáticamente el enlace de WhatsApp."
           />
         </label>
 
@@ -119,7 +131,7 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
             </p>
           ) : (
             <p className="text-sm text-[color:var(--muted)]">
-              Los nombres internos y variables siguen en ingles para mantener buenas practicas.
+              Los nombres internos y variables siguen en inglés para mantener buenas prácticas.
             </p>
           )}
         </div>
