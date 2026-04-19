@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -82,15 +82,10 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
 
       <label className="space-y-2">
         <span className="field-label">Foto del proveedor</span>
-        <input
-          className="field-input"
-          type="file"
-          name="imageFile"
-          accept="image/*"
-        />
+        <input className="field-input" type="file" name="imageFile" accept="image/*" />
         <FieldMessage
           error={state.errors?.imageUrl}
-          hint="Opcional. Puedes tomar una foto con tu cámara o elegir una imagen de tu dispositivo. Si no subes nada, se usará la imagen predeterminada."
+          hint="Opcional. Puedes elegir una imagen de tu dispositivo. Si no subes nada, se usará la imagen predeterminada."
         />
       </label>
 
@@ -128,11 +123,7 @@ export function ProviderForm({ categoryOptions }: { categoryOptions: Category[] 
             >
               {state.message}
             </p>
-          ) : (
-            <p className="text-sm text-[color:var(--muted)]">
-              Los nombres internos y variables siguen en inglés para mantener buenas prácticas.
-            </p>
-          )}
+          ) : null}
         </div>
 
         <button className="primary-button" type="submit" disabled={isPending}>

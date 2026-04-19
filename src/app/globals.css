@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 :root {
   --background: #eef9f8;
@@ -278,6 +278,7 @@ textarea:focus {
 
 .primary-button,
 .secondary-button,
+.info-button,
 .danger-button,
 .whatsapp-share-button {
   display: inline-flex;
@@ -301,6 +302,13 @@ textarea:focus {
   color: var(--ink);
 }
 
+.info-button {
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: linear-gradient(135deg, #3b82f6, #2563eb 58%, #1d4ed8);
+  color: white;
+  box-shadow: 0 20px 32px rgba(37, 99, 235, 0.28);
+}
+
 .danger-button {
   background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
@@ -316,6 +324,7 @@ textarea:focus {
 
 .primary-button:hover:not(:disabled),
 .secondary-button:hover:not(:disabled),
+.info-button:hover:not(:disabled),
 .danger-button:hover:not(:disabled),
 .whatsapp-share-button:hover:not(:disabled) {
   transform: translateY(-1px);
@@ -327,6 +336,7 @@ textarea:focus {
 
 .primary-button:disabled,
 .secondary-button:disabled,
+.info-button:disabled,
 .danger-button:disabled,
 .whatsapp-share-button:disabled {
   opacity: 0.6;
@@ -469,6 +479,39 @@ textarea:focus {
 .emergency-link:hover {
   transform: translateY(-1px);
   border-color: rgba(185, 28, 28, 0.28);
+}
+
+.service-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  background: linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(239, 246, 255, 0.98));
+  color: #1d4ed8;
+  padding: 0.85rem 1.15rem;
+  font-size: 0.96rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+}
+
+.service-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.18);
+}
+
+.service-link-site {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1e40af;
+}
+
+.service-link-whatsapp {
+  border-color: rgba(18, 140, 126, 0.18);
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.98), rgba(209, 250, 229, 0.98));
+  color: #128c7e;
+  box-shadow: 0 12px 24px rgba(18, 140, 126, 0.14);
 }
 
 @media (max-width: 768px) {

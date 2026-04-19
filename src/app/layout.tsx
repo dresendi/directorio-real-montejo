@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, Manrope } from "next/font/google";
 
@@ -38,6 +38,9 @@ export default function RootLayout({
               Directorio Real Montejo
             </Link>
             <nav className="site-nav-actions">
+              <Link href="/servicios-basicos" className="info-button">
+                Servicios Basicos
+              </Link>
               <Link href="/emergencias" className="danger-button">
                 Numeros de Emergencia
               </Link>
