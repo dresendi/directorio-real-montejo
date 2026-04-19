@@ -1,4 +1,4 @@
-import type { ProviderCard } from "@/types/directory";
+﻿import type { ProviderCard } from "@/types/directory";
 
 export type ProviderSort = "alphabetical" | "rating" | "reviews" | "recent";
 

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { connection } from "next/server";
@@ -94,9 +94,9 @@ export default async function Home({ searchParams }: HomePageProps) {
                 Directorio de proveedores de Real Montejo
               </h1>
               <p className="max-w-2xl text-[0.95rem] leading-6 text-[color:var(--muted)]">
-                Una aplicaciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n colaborativa para que los vecinos inicien sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n, publiquen
-                proveedores de la zona, los califiquen con estrellas y encuentren rÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡pido las
-                mejores opciones por categorÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­a.
+                Una aplicación colaborativa para que los vecinos inicien sesión, publiquen
+                proveedores de la zona, los califiquen con estrellas y encuentren rápido las
+                mejores opciones por categoría.
               </p>
             </div>
 
@@ -107,7 +107,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               </div>
               <div className="metric-card">
                 <span className="metric-value">{summary.reviewCount}</span>
-                <span className="metric-label">ReseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±as de vecinos</span>
+                <span className="metric-label">Reseñas de vecinos</span>
               </div>
               <div className="metric-card">
                 <span className="metric-value">{summary.topRatedCount}</span>
@@ -115,7 +115,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               </div>
               <div className="metric-card">
                 <span className="metric-value">{summary.categoryCount}</span>
-                <span className="metric-label">CategorÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­as de servicio</span>
+                <span className="metric-label">Categorías de servicio</span>
               </div>
             </div>
           </div>
@@ -131,15 +131,15 @@ export default async function Home({ searchParams }: HomePageProps) {
                     Bienvenido de nuevo, {session.user.name ?? "Vecino"}
                   </h2>
                   <p className="text-sm leading-6 text-[color:var(--muted)]">
-                    Ya iniciaste sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n y puedes publicar proveedores, ademÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡s de dejar o actualizar
-                    tu reseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a en cualquier ficha.
+                    Ya iniciaste sesión y puedes publicar proveedores, además de dejar o actualizar
+                    tu reseña en cualquier ficha.
                   </p>
                   <SignOutButton />
                 </div>
               ) : (
                 <div className="space-y-4">
                   <h2 className="text-lg font-semibold text-[color:var(--ink)] sm:text-xl">
-                    Inicia sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n para participar en el directorio
+                    Inicia sesión para participar en el directorio
                   </h2>
                   <p className="text-sm leading-6 text-[color:var(--muted)]">
                     Accede con tu cuenta de Google para publicar proveedores y compartir
@@ -189,7 +189,7 @@ export default async function Home({ searchParams }: HomePageProps) {
               ))
             ) : (
               <div className="rounded-[1.5rem] border border-dashed border-[color:var(--line)] bg-[color:var(--panel)] p-7 text-center text-sm text-[color:var(--muted)]">
-                No se encontrÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³ nada.
+                No se encontró nada.
               </div>
             )}
           </div>
@@ -205,8 +205,8 @@ export default async function Home({ searchParams }: HomePageProps) {
             ) : (
               <div className="space-y-4 rounded-[1.5rem] bg-[color:var(--panel)] p-5">
                 <p className="text-sm leading-7 text-[color:var(--muted)]">
-                  El inicio de sesiÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n social ayuda a evitar publicaciones anÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³nimas y permite que
-                  cada vecino mantenga una reseÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±a responsable por proveedor.
+                  El inicio de sesión social ayuda a evitar publicaciones anónimas y permite que
+                  cada vecino mantenga una reseña responsable por proveedor.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <SignInButton provider="google" disabled={!enabledProviders.includes("google")} />
@@ -218,7 +218,7 @@ export default async function Home({ searchParams }: HomePageProps) {
           <section className="content-card">
             <div className="section-heading">
               <div>
-                <p className="eyebrow">CategorÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â­as</p>
+                <p className="eyebrow">Categorías</p>
                 <h2 className="section-title">Explora por tipo de servicio</h2>
               </div>
             </div>

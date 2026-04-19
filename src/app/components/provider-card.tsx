@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import type { ProviderCard as ProviderCardType } from "@/types/directory";
 
@@ -31,7 +31,7 @@ export function ProviderCard({ provider }: ProviderCardProps) {
               <span className="provider-image-icon">□</span>
               <p className="provider-image-title">Espacio para imagen</p>
               <p className="provider-image-copy">
-                Aqui se puede mostrar la foto, logotipo o trabajo realizado del proveedor.
+                Aquí se puede mostrar la foto, logotipo o trabajo realizado del proveedor.
               </p>
             </div>
           )}
@@ -74,7 +74,7 @@ export function ProviderCard({ provider }: ProviderCardProps) {
 
           <div className="grid gap-3 md:grid-cols-2">
             <div className="info-chip">
-              <span className="info-label">Telefono</span>
+              <span className="info-label">Teléfono</span>
               <span className="info-value break-anywhere">{provider.phone}</span>
             </div>
             <div className="info-chip">
