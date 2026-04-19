@@ -34,8 +34,13 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 sm:px-6 lg:px-8">
           <header className="site-nav">
-            <Link href="/" className="site-nav-brand">
-              Directorio Real Montejo
+            <Link href="/" className="site-nav-brand" aria-label="Ir al inicio del directorio">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://i.imgur.com/0gntShW.png"
+                alt="Directorio Real Montejo"
+                className="site-nav-brand-image"
+              />
             </Link>
             <nav className="site-nav-actions">
               <Link href="/servicios-basicos" className="info-button">

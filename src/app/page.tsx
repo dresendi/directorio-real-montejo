@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,6 +46,7 @@ export default async function Home({ searchParams }: HomePageProps) {
   const selectedCategory = getSearchParamValue(filters.category);
   const searchQuery = getSearchParamValue(filters.query);
   const rawSortBy = getSearchParamValue(filters.sort) || "recent";
+  const activeMongoDbName = process.env.MONGODB_DB_NAME || "real-montejo-directory";
   const hasActiveFilters = Boolean(
     selectedCategory || searchQuery || getSearchParamValue(filters.sort),
   );
@@ -76,9 +77,6 @@ export default async function Home({ searchParams }: HomePageProps) {
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl space-y-5">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex rounded-full bg-white/70 px-4 py-2 text-xs font-semibold text-[color:var(--brand)] sm:text-sm">
-                Recomendaciones confiables entre vecinos
-              </span>
               <a
                 href={whatsappShareUrl}
                 target="_blank"
@@ -93,22 +91,6 @@ export default async function Home({ searchParams }: HomePageProps) {
             </div>
 
             <div className="space-y-3">
-              <div className="app-logo-placeholder">
-                <div className="app-logo-mark" aria-hidden="true">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="https://i.imgur.com/aokZndH.png"
-                    alt="Logo del Directorio de proveedores de Real Montejo"
-                    className="app-logo-image"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <p className="app-logo-label">Real Montejo</p>
-                  <p className="app-logo-copy">
-                    Directorio colaborativo de proveedores recomendados por vecinos.
-                  </p>
-                </div>
-              </div>
               <h1 className="max-w-3xl text-[1.7rem] font-semibold tracking-tight text-[color:var(--ink)] sm:text-[2.2rem]">
                 Directorio de proveedores de Real Montejo
               </h1>
@@ -117,6 +99,9 @@ export default async function Home({ searchParams }: HomePageProps) {
                 proveedores de la zona, los califiquen con estrellas y encuentren rápido las
                 mejores opciones por categoría.
               </p>
+              <div className="inline-flex rounded-full border border-[color:var(--line)] bg-white/80 px-4 py-2 text-xs font-semibold text-[color:var(--brand-strong)] shadow-sm">
+                Base de datos activa: {activeMongoDbName}
+              </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

@@ -48,10 +48,20 @@ body {
 }
 
 .site-nav-brand {
-  font-family: var(--font-heading), serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.4rem;
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.62);
+}
+
+.site-nav-brand-image {
+  display: block;
+  width: clamp(150px, 18vw, 210px);
+  max-height: 5rem;
+  height: auto;
+  object-fit: contain;
 }
 
 .site-nav-actions {
