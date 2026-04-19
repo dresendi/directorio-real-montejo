@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
+import { connection } from "next/server";
 
 import { ProviderCard } from "@/app/components/provider-card";
 import { ProviderFilters } from "@/app/components/provider-filters";
@@ -16,6 +17,8 @@ type CategoryPageProps = {
 };
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+  await connection();
+
   const [{ categoryId }, filters, session, providerCards, categoryOptions] = await Promise.all([
     params,
     searchParams,
@@ -35,7 +38,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     return (
       <main className="mx-auto flex min-h-screen w-full max-w-5xl flex-col gap-6 px-5 py-8 sm:px-8">
         <div className="content-card text-sm text-[color:var(--muted)]">
-          La categoría solicitada no existe.
+          La categorÃƒÂ­a solicitada no existe.
         </div>
       </main>
     );
@@ -52,7 +55,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
             <Link href="/" className="text-sm font-semibold text-[color:var(--brand)]">
-              ← Volver al directorio
+              Ã¢â€ Â Volver al directorio
             </Link>
             <h1 className="text-2xl font-semibold text-[color:var(--ink)] sm:text-3xl">
               {category.label}
@@ -76,10 +79,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             <label className="space-y-2">
               <span className="field-label">Ordenar por</span>
               <select className="field-input" name="sort" defaultValue={sortBy}>
-                <option value="alphabetical">Alfabético</option>
+                <option value="alphabetical">AlfabÃƒÂ©tico</option>
                 <option value="rating">Mejor rating</option>
-                <option value="reviews">Más reseñados</option>
-                <option value="recent">Más recientes</option>
+                <option value="reviews">MÃƒÂ¡s reseÃƒÂ±ados</option>
+                <option value="recent">MÃƒÂ¡s recientes</option>
               </select>
             </label>
             <div className="flex items-end">
@@ -102,7 +105,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           ))
         ) : (
           <div className="content-card text-sm text-[color:var(--muted)]">
-            Todavía no hay proveedores publicados en esta categoría.
+            TodavÃƒÂ­a no hay proveedores publicados en esta categorÃƒÂ­a.
           </div>
         )}
       </section>

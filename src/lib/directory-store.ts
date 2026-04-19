@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { Collection, ObjectId } from "mongodb";
+import { cache } from "react";
 
 import { categories as fallbackCategories, rawCategories, sortCategories } from "@/lib/directory-catalog";
 import { getMongoClient, isMongoConfigured } from "@/lib/mongodb";
@@ -289,9 +290,9 @@ async function readMongoStore(): Promise<DirectoryStore> {
   return normalizedStore.store;
 }
 
-async function readDirectoryStore() {
+const readDirectoryStore = cache(async () => {
   return isMongoConfigured() ? readMongoStore() : readStore();
-}
+});
 
 export async function getDirectoryCategories(): Promise<Category[]> {
   const store = await readDirectoryStore();
