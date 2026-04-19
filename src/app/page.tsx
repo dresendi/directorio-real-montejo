@@ -45,7 +45,7 @@ export default async function Home({ searchParams }: HomePageProps) {
   const enabledProviders = getEnabledAuthProviders();
   const selectedCategory = getSearchParamValue(filters.category);
   const searchQuery = getSearchParamValue(filters.query);
-  const rawSortBy = getSearchParamValue(filters.sort) || "rating";
+  const rawSortBy = getSearchParamValue(filters.sort) || "recent";
   const hasActiveFilters = Boolean(
     selectedCategory || searchQuery || getSearchParamValue(filters.sort),
   );
@@ -55,7 +55,7 @@ export default async function Home({ searchParams }: HomePageProps) {
     rawSortBy === "reviews" ||
     rawSortBy === "recent"
       ? rawSortBy
-      : "rating";
+      : "recent";
 
   const filteredProviders = sortProviders(
     filterProviders({
