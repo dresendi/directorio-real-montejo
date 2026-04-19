@@ -286,10 +286,6 @@ async function readMongoStore(): Promise<DirectoryStore> {
     reviews: reviews.map(normalizeMongoReview),
   });
 
-  if (normalizedStore.changed) {
-    await replaceMongoStore(normalizedStore.store);
-  }
-
   return normalizedStore.store;
 }
 
