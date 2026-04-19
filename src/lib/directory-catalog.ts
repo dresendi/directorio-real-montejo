@@ -102,16 +102,6 @@ export const rawCategories: Category[] = [
     description: "Clases de apoyo, regularizacion y asesorias academicas.",
   },
   {
-    id: "japay",
-    label: "JAPAY",
-    description: "Contacto o servicios relacionados con JAPAY.",
-  },
-  {
-    id: "cfe",
-    label: "CFE",
-    description: "Contacto o servicios relacionados con CFE.",
-  },
-  {
     id: "electric-fences",
     label: "Cercas Electricas",
     description: "Instalacion y mantenimiento de cercas electricas.",
@@ -125,11 +115,6 @@ export const rawCategories: Category[] = [
     id: "car-batteries",
     label: "Baterias de auto",
     description: "Venta, cambio o asistencia para baterias automotrices.",
-  },
-  {
-    id: "ayuntatel",
-    label: "AYUNTATEL",
-    description: "Contacto o servicios relacionados con AYUNTATEL.",
   },
   {
     id: "gym",
