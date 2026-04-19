@@ -11,11 +11,8 @@ import { ProviderForm } from "@/app/components/provider-form";
 import { SignInButton } from "@/app/components/sign-in-button";
 import { SignOutButton } from "@/app/components/sign-out-button";
 import { authOptions, getEnabledAuthProviders } from "@/lib/auth-options";
-import {
-  getDirectoryCategories,
-  getDirectorySummary,
-  getProviderCards,
-} from "@/lib/directory-store";
+import { getDirectorySnapshot } from "@/lib/directory-store";
+import { getConfiguredMongoHost } from "@/lib/mongodb";
 import {
   filterProviders,
   getSearchParamValue,
@@ -39,19 +36,19 @@ const whatsappShareUrl =
 export default async function Home({ searchParams }: HomePageProps) {
   await connection();
 
-  const [filters, session, summary, providerCards, categoryOptions] = await Promise.all([
+  const [filters, session, snapshot] = await Promise.all([
     searchParams,
     getServerSession(authOptions),
-    getDirectorySummary(),
-    getProviderCards(),
-    getDirectoryCategories(),
+    getDirectorySnapshot(),
   ]);
 
   const enabledProviders = getEnabledAuthProviders();
+  const { summary, providerCards, categoryOptions } = snapshot;
   const selectedCategory = getSearchParamValue(filters.category);
   const searchQuery = getSearchParamValue(filters.query);
   const rawSortBy = getSearchParamValue(filters.sort) || "recent";
   const activeMongoDbName = process.env.MONGODB_DB_NAME || "real-montejo-directory";
+  const activeMongoHost = getConfiguredMongoHost();
   const hasActiveFilters = Boolean(
     selectedCategory || searchQuery || getSearchParamValue(filters.sort),
   );
@@ -104,8 +101,13 @@ export default async function Home({ searchParams }: HomePageProps) {
                 proveedores de la zona, los califiquen con estrellas y encuentren rÃ¡pido las
                 mejores opciones por categorÃ­a.
               </p>
-              <div className="inline-flex rounded-full border border-[color:var(--line)] bg-white/80 px-4 py-2 text-xs font-semibold text-[color:var(--brand-strong)] shadow-sm">
-                Base de datos activa: {activeMongoDbName}
+              <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                <div className="inline-flex rounded-full border border-[color:var(--line)] bg-white/80 px-4 py-2 text-[color:var(--brand-strong)] shadow-sm">
+                  Base de datos activa: {activeMongoDbName}
+                </div>
+                <div className="inline-flex rounded-full border border-[color:var(--line)] bg-white/80 px-4 py-2 text-[color:var(--brand-strong)] shadow-sm">
+                  Host Mongo activo: {activeMongoHost}
+                </div>
               </div>
             </div>
 

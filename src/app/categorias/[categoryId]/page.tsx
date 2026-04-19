@@ -6,7 +6,7 @@ import { connection } from "next/server";
 import { ProviderCard } from "@/app/components/provider-card";
 import { ProviderFilters } from "@/app/components/provider-filters";
 import { authOptions } from "@/lib/auth-options";
-import { getDirectoryCategories, getProviderCards } from "@/lib/directory-store";
+import { getDirectorySnapshot } from "@/lib/directory-store";
 import { getSearchParamValue, sortProviders, type ProviderSort } from "@/lib/provider-directory";
 
 export const dynamic = "force-dynamic";
@@ -19,13 +19,13 @@ type CategoryPageProps = {
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
   await connection();
 
-  const [{ categoryId }, filters, session, providerCards, categoryOptions] = await Promise.all([
+  const [{ categoryId }, filters, session, snapshot] = await Promise.all([
     params,
     searchParams,
     getServerSession(authOptions),
-    getProviderCards(),
-    getDirectoryCategories(),
+    getDirectorySnapshot(),
   ]);
+  const { providerCards, categoryOptions } = snapshot;
 
   const category = categoryOptions.find((entry) => entry.id === categoryId);
   const rawSortBy = getSearchParamValue(filters.sort) || "alphabetical";

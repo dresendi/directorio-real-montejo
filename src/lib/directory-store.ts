@@ -366,6 +366,28 @@ export async function getProviderCards() {
   return store.providers.map((provider) => toProviderCard(provider, store.reviews, store.categories));
 }
 
+export async function getDirectorySnapshot() {
+  const store = await readDirectoryStore();
+  const providerCards = store.providers.map((provider) =>
+    toProviderCard(provider, store.reviews, store.categories),
+  );
+  const categoryOptions = sortCategories(store.categories);
+  const reviewCount = providerCards.reduce((sum, provider) => sum + provider.reviewCount, 0);
+
+  return {
+    providerCards,
+    categoryOptions,
+    summary: {
+      providerCount: providerCards.length,
+      reviewCount,
+      topRatedCount: providerCards.filter(
+        (provider) => provider.reviewCount > 0 && provider.averageRating >= 4.5,
+      ).length,
+      categoryCount: categoryOptions.length,
+    } satisfies DirectorySummary,
+  };
+}
+
 export async function getProviderBySlug(slug: string) {
   const store = await readDirectoryStore();
   const provider = store.providers.find((entry) => entry.slug === slug);
@@ -412,20 +434,8 @@ export async function updateProviderImage(input: {
 }
 
 export async function getDirectorySummary(): Promise<DirectorySummary> {
-  const [providerCards, categoryOptions] = await Promise.all([
-    getProviderCards(),
-    getDirectoryCategories(),
-  ]);
-  const reviewCount = providerCards.reduce((sum, provider) => sum + provider.reviewCount, 0);
-
-  return {
-    providerCount: providerCards.length,
-    reviewCount,
-    topRatedCount: providerCards.filter(
-      (provider) => provider.reviewCount > 0 && provider.averageRating >= 4.5,
-    ).length,
-    categoryCount: categoryOptions.length,
-  };
+  const snapshot = await getDirectorySnapshot();
+  return snapshot.summary;
 }
 
 export async function addProvider(input: {
